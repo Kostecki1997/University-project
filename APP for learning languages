@@ -1,0 +1,262 @@
+import time
+from tkinter import *
+import os
+import random
+from tkinter import filedialog
+
+global User
+User = []
+def RegisterUser():
+    UserNameinfo = username.get()
+    PasswordInfo = password.get()
+
+
+    file = open(UserNameinfo, "w")
+    file.write(UserNameinfo+"\n")
+    file.write(PasswordInfo)
+    file.close()
+
+    UsernameEntry.delete(0, END)
+    PasswordEntry.delete(0, END)
+
+    Label(screen1, text = "Registration Completed", fg = "green").pack()
+
+def register():
+    global screen1
+    screen1 = Toplevel(screen)
+    screen1.title("Register")
+    screen1.geometry("300x250")
+
+    global username
+    global password
+    global UsernameEntry
+    global PasswordEntry
+    username = StringVar()
+    password = StringVar()
+
+    Label(screen1, text = "Please enter details below").pack()
+    Label(screen1, text="").pack()
+    Label(screen1, text = "Username *").pack()
+    global UsernameEntry
+    UsernameEntry = Entry(screen1, textvariable = username)
+    UsernameEntry.pack()
+    Label(screen1, text = "Password *").pack()
+    global PasswordEntry
+    PasswordEntry = Entry(screen1, textvariable = password)
+    PasswordEntry.pack()
+    Label(screen1, text="").pack()
+    Button(screen1, text = "Register", command = RegisterUser).pack()
+
+def delete2():
+    screen3.destroy()
+    screen2.destroy()
+    session()
+
+def delete3():
+    screen4.destroy()
+
+def delete4():
+    screen5.destroy()
+
+def ImportFile():
+    global Dictionary
+    global Answer
+    global modified
+    file = filedialog.askopenfilename()
+    file = open(file, "r")
+    read = file.readlines()
+    modified = []
+    Dictionary = []
+    Answer = []
+
+    for line in read:
+        if line[-1] == '\n':
+            modified.append((line[:-1]))
+        else:
+            modified.append(line)
+
+    for i in range(len(modified)):
+        if (i % 2 == 0):
+            Dictionary.append(modified[i])
+        else:
+            Answer.append(modified[i])
+
+def getRevWord():
+    global randomRevDict
+    global randomRevAns
+    rand_idx = random.randint(0, len(revNowDict) - 1)
+    randomRevDict =  revNowDict[rand_idx]
+    randomRevAns = revNowAns[rand_idx]
+
+    learnLabel.config(text=f"Translate to polish: {randomRevDict}")
+
+def revisionIn7():
+    print(revIn7Dict)
+    print(revIn7Ans)
+
+global revIn7Dict
+global revIn7Ans
+revIn7Dict = []
+revIn7Ans = []
+global revNowDict
+global revNowAns
+revNowDict = []
+revNowAns = []
+
+def revisionNow():
+
+
+    print(revNowDict)
+    print(revNowAns)
+
+def getWord():
+    global randomWord
+    global randomAnswer
+
+    rand_idx = random.randint(0, len(Dictionary) - 1)
+    randomWord = Dictionary[rand_idx]
+    randomAnswer = Answer[rand_idx]
+
+    learnLabel.config(text = f"Translate to polish: {randomWord}")
+
+def checkAnswer():
+    global checkAnswer
+    userAnswer = answerCheck.get()
+    if userAnswer == randomAnswer:
+        AnswerLabel.config(text="this is correct answer")
+        AnswerLabel.pack()
+        revIn7Dict.append(randomWord)
+        revIn7Ans.append(randomAnswer)
+    else:
+        AnswerLabel.config(text=f"Answer incorrect,correct answer is: {randomAnswer}")
+        AnswerLabel.pack()
+        revNowDict.append(randomWord)
+        revNowAns.append(randomAnswer)
+        revisionNow()
+
+
+def endSession():
+    with open(f"{User[0]} log.txt", 'w') as file:
+        file.write("Session ended")
+
+    screen6.destroy()
+
+
+def session():
+    global screen6
+    global learnLabel
+    global AnswerLabel
+    screen6 = Toplevel(screen)
+    screen6.title("Dashboard")
+    screen6.geometry("600x600")
+    Label(screen6, text = "Welcome to Smart Learn").pack()
+    Button(screen6, text = "import file", command = ImportFile).pack()
+    Label(screen6, text="").pack()
+    Button(screen6, text = "Get new word", command = getWord).pack()
+    Label(screen6, text="").pack()
+    Label(screen6, text="").pack()
+
+    learnLabel = Label(screen6, text = "Start when you will be ready", bg = "grey", width = "330", height = "4")
+    learnLabel.pack()
+    Label(screen6, text="").pack()
+    Label(screen6, text="").pack()
+
+    Label(screen6, text="Please enter your answer and hit submit button").pack()
+    global answerEntry
+    global answerCheck
+    answerCheck = StringVar()
+    answerEntry = Entry(screen6, textvariable = answerCheck)
+    answerEntry.pack()
+
+    Label(screen6, text="").pack()
+    Button(screen6, text = "submit", command = checkAnswer).pack()
+    Label(screen6, text="").pack()
+    AnswerLabel = Label(screen6, text="", bg="grey", width="330", height="4")
+
+    Button(screen6, text="End session", bg="green", command = endSession).pack(side=BOTTOM)
+    Button(screen6, text = "Your revisions", bg = "red", command = getRevWord).pack(side = BOTTOM)
+
+
+def LoginSuccefull():
+    global screen3
+    screen3 = Toplevel(screen)
+    screen3.title("Login Succesfull")
+    screen3.geometry("300x250")
+    Label(screen3, text = "Login Succesfull").pack()
+    Button(screen3, text = "OK", command = delete2).pack()
+
+def PasswordInvalid():
+    global screen4
+    screen4 = Toplevel(screen)
+    screen4.title("Password invalid")
+    screen4.geometry("300x250")
+    Label(screen4, text = "Password Invalid").pack()
+    Button(screen4, text="OK", command = delete3).pack()
+
+def UserNotFound():
+    global  screen5
+    screen5 = Toplevel(screen)
+    screen5.title("User not found")
+    screen5.geometry("300x250")
+    Label(screen5, text = "User not found").pack()
+    Button(screen5, text="OK", command = delete4).pack()
+
+def LoginVerify():
+    global Username1
+    Username1 = UsernameVerify.get()
+    User.append(UsernameVerify.get())
+    Password1 = PasswordVerify.get()
+    UsernameEntry1.delete(0, END)
+    PasswordEntry1.delete(0, END)
+    print(User)
+
+    ListOfFiles = os.listdir()
+    if Username1 in ListOfFiles:
+        file1 = open(Username1, "r")
+        verify = file1.read().splitlines()
+        if Password1 in verify:
+            LoginSuccefull()
+        else:
+            PasswordInvalid()
+    else:
+        UserNotFound()
+
+def login():
+    global screen2
+    screen2 = Toplevel(screen)
+    screen2.title("Login")
+    screen2.geometry("300x250")
+
+    Label(screen2, text="Please enter details below to login").pack()
+    Label(screen2, text="").pack()
+
+    global UsernameVerify
+    global PasswordVerify
+    UsernameVerify = StringVar()
+    PasswordVerify = StringVar()
+    global UsernameEntry1
+    global PasswordEntry1
+    Label(screen2, text="Username *").pack()
+    UsernameEntry1 = Entry(screen2, textvariable = UsernameVerify)
+    UsernameEntry1.pack()
+    Label(screen2, text="").pack()
+    Label(screen2, text="Password *").pack()
+    PasswordEntry1 = Entry(screen2, textvariable=PasswordVerify)
+    PasswordEntry1.pack()
+    Label(screen2, text="").pack()
+    Button(screen2, text = "Login", command = LoginVerify).pack()
+
+def main_screen():
+    global screen
+    screen = Tk()
+    screen.geometry("330x300")
+    screen.title("Smart Learn")
+    Label(text = "Smart Learn", bg = "grey", width = "330", height = "2").pack()
+    Label(text="").pack()
+    Button(text= "Login", height = "2", width = "7", command = login).pack()
+    Label(text = "").pack()
+    Button(text = "Register", height = "2", width = "7", command = register).pack()
+
+    screen.mainloop()
+
+main_screen()
